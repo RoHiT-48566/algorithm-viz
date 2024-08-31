@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Inconsolata:wght@200..900&display=swap");
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+.algoComponent {
+  margin-top: 2%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Inconsolata";
+}
+.heading {
+  font-family: "Abril Fatface";
+  font-size: 30px;
+}

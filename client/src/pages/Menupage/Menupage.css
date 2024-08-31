@@ -1,0 +1,23 @@
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Inconsolata:wght@200..900&display=swap");
+.buttons-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px;
+}
+
+.buttons-container button {
+  flex: 1 1 200px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: black;
+  font-family: "Inconsolata";
+  color: white;
+  border: 1px solid black;
+}
+
+.buttons-container button:hover {
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+}

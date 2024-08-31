@@ -1,0 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Inconsolata:wght@200..900&display=swap");
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: black;
+  color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7.4px);
+  -webkit-backdrop-filter: blur(7.4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.navbar .logo {
+  display: block;
+  text-align: center;
+  font-size: 1.5rem;
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  font-family: "Abril Fatface";
+  font-size: 32px;
+}

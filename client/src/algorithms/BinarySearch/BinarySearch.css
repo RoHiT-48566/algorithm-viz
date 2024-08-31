@@ -1,0 +1,44 @@
+.values-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.value-box {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: lightblue;
+  color: black;
+  font-size: 20px;
+  border-radius: 5px;
+  transition: background-color 0.5s, transform 0.5s;
+}
+
+.low-highlight {
+  background-color: lightcoral;
+  transform: scale(1.1); /* Slightly enlarge the highlighted box */
+}
+
+.high-highlight {
+  background-color: lightgoldenrodyellow;
+  transform: scale(1.1); /* Slightly enlarge the highlighted box */
+}
+
+.mid-highlight {
+  background-color: lightgreen;
+  transform: scale(1.1); /* Slightly enlarge the highlighted box */
+}
+
+.heading {
+  text-align: center;
+  margin: 10px;
+}
+
+.search-btn {
+  height: auto;
+  display: block;
+  margin: auto;
+}
