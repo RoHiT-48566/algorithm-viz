@@ -8,6 +8,9 @@ const algoMapping = {
     import("../algorithms/BinarySearch/BinarySearch.jsx")
   ),
   "Bubble Sort": lazy(() => import("../algorithms/BubbleSort/BubbleSort.jsx")),
+  "Selection Sort": lazy(() => import("../algorithms/SelectionSort/SelectionSort.jsx")),
+  "Insertion Sort": lazy(() => import("../algorithms/InsertionSort/InsertionSort.jsx")),
+
 };
 
 export default algoMapping;

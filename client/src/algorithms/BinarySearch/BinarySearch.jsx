@@ -1,92 +1,161 @@
-import React, { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import "./BinarySearch.css";
+import React, { useState } from "react";
+import './BinarySearch.css';
 
-function BinarySearch() {
-  const [message, setMessage] = useState("");
-  const [lowIndex, setLowIndex] = useState(null);
-  const [highIndex, setHighIndex] = useState(null);
-  const [midIndex, setMidIndex] = useState(null);
-  const [searching, setSearching] = useState(false);
-  const values = [1, 3, 4, 5, 7, 9, 11, 13, 15];
-  const target = 13;
-  const timeoutRefs = useRef([]);
+const BinarySearch = () => {
+  const [array, setArray] = useState([]);
+  const [target, setTarget] = useState('');
+  const [low, setLow] = useState(0);
+  const [high, setHigh] = useState(array.length - 1);
+  const [mid, setMid] = useState(null);
+  const [foundIndex, setFoundIndex] = useState(null);
+  const [stepMessage, setStepMessage] = useState('');
+  const [history, setHistory] = useState([]); // Track history of steps
 
-  const clearAllTimeouts = () => {
-    timeoutRefs.current.forEach(clearTimeout);
-    timeoutRefs.current = [];
+  const handleArrayChange = (e) => {
+    const value = e.target.value.split(',').map(Number).sort((a, b) => a - b);
+    setArray(value);
+    setLow(0);
+    setHigh(value.length - 1);
+    setMid(null);
+    setFoundIndex(null);
+    setStepMessage('');
+    setHistory([]); // Reset history when a new array is entered
   };
 
-  const binarySearch = () => {
-    setMessage("");
-    setSearching(true);
-    setLowIndex(null);
-    setHighIndex(null);
-    setMidIndex(null);
-    clearAllTimeouts();
+  const handleTargetChange = (e) => {
+    setTarget(Number(e.target.value));
+    setLow(0);
+    setHigh(array.length - 1);
+    setMid(null);
+    setFoundIndex(null);
+    setStepMessage('');
+    setHistory([]); // Reset history when a new target is entered
+  };
 
-    let low = 0;
-    let high = values.length - 1;
+  const handleForward = () => {
+    if (low <= high) {
+      const middle = Math.floor((low + high) / 2);
+      setMid(middle);
 
-    const searchStep = () => {
-      if (low > high) {
-        setMessage("Target element not found.");
-        setSearching(false);
-        return;
+      // Save the current state to history
+      setHistory([...history, { low, high, mid }]);
+
+      if (array[middle] === target) {
+        setFoundIndex(middle);
+        setStepMessage(`Element found at index ${middle}`);
+      } else if (array[middle] < target) {
+        setLow(middle + 1);
+        setStepMessage(`Element not at index ${middle}. Searching right half.`);
+      } else {
+        setHigh(middle - 1);
+        setStepMessage(`Element not at index ${middle}. Searching left half.`);
       }
+    } else {
+      setStepMessage('Element is not present in the array');
+    }
+  };
 
-      const mid = Math.floor((low + high) / 2);
+  const handleBackward = () => {
+    if (history.length === 0) {
+      setStepMessage('No previous step available.');
+      return;
+    }
 
-      const timeoutId = setTimeout(() => {
-        setLowIndex(low);
-        setHighIndex(high);
-        setMidIndex(mid);
+    // Restore the previous state from history
+    const lastState = history.pop(); // Remove the last state
+    setLow(lastState.low);
+    setHigh(lastState.high);
+    setMid(lastState.mid);
 
-        if (values[mid] === target) {
-          setMessage(`Target element ${target} found at index ${mid}!`);
-          setSearching(false);
-        } else if (values[mid] < target) {
-          low = mid + 1;
-        } else {
-          high = mid - 1;
-        }
+    // If a match was found, clear the foundIndex to allow further searching
+    if (foundIndex !== null) {
+      setFoundIndex(null);
+      setStepMessage('Reversed from found element. Continuing search.');
+    } else {
+      setStepMessage(`Reversed one step. Current range: low = ${lastState.low}, high = ${lastState.high}`);
+    }
 
-        searchStep();
-      }, 2000);
-
-      timeoutRefs.current.push(timeoutId);
-    };
-
-    searchStep();
+    // Update the history after popping
+    setHistory([...history]);
   };
 
   return (
-    <div>
-      <p className="heading">Binary Search</p>
-      <Button
-        onClick={binarySearch}
-        disabled={searching}
-        className="search-btn"
-      >
-        Search
-      </Button>
-      <div className="values-container">
-        {values.map((value, index) => (
-          <div
-            key={index}
-            className={`value-box ${
-              index === lowIndex ? "low-highlight" : ""
-            } ${index === highIndex ? "high-highlight" : ""} ${
-              index === midIndex ? "mid-highlight" : ""
-            }`}
-          >
-            {value}
-          </div>
-        ))}
+    <div className="container">
+      <h1 className="text-center my-4 font-weight-bold">Binary Search</h1>
+
+      <div className="input-group mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Enter array elements separated by commas (e.g., 1,2,3,4,5)"
+          onChange={handleArrayChange}
+        />
+        <input
+          type="number"
+          className="form-control"
+          placeholder="Enter target element"
+          onChange={handleTargetChange}
+        />
       </div>
-      <p>{message}</p>
+
+      <div className="row">
+        <div className="col-md-6">
+          <pre>
+            <code className="language-javascript">
+              {`function binarySearch(arr, target) {
+  let low = 0, high = arr.length - 1;
+  while(low <= high) {
+    let mid = Math.floor((low + high) / 2);
+    if(arr[mid] === target) return mid;
+    else if(arr[mid] < target) low = mid + 1;
+    else high = mid - 1;
+  }
+  return -1;
+}`}
+            </code>
+          </pre>
+        </div>
+
+        <div className="col-md-6">
+          <div id="visualization" className="d-flex justify-content-center">
+            {array.map((num, index) => (
+              <div
+                key={index}
+                className={`array-element ${
+                  index === mid ? 'current' : ''
+                } ${index === foundIndex ? 'found' : ''}`}
+              >
+                {num}
+              </div>
+            ))}
+          </div>
+
+          <div className="btn-group mt-3 d-flex justify-content-center">
+            <button
+              id="backward"
+              className="btn btn-primary"
+              onClick={handleBackward}
+            >
+              Backward
+            </button>
+            <button
+              id="forward"
+              className="btn btn-success"
+              onClick={handleForward}
+            >
+              Forward
+            </button>
+          </div>
+
+          <div className="card mt-3 text-center">
+            <div className="card-body">
+              <p className="card-text">{stepMessage}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default BinarySearch;
