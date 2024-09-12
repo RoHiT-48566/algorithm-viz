@@ -1,5 +1,4 @@
-import React, { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
 import './BinarySearch.css';
 
 const BinarySearch = () => {
@@ -10,6 +9,7 @@ const BinarySearch = () => {
   const [mid, setMid] = useState(null);
   const [foundIndex, setFoundIndex] = useState(null);
   const [stepMessage, setStepMessage] = useState('');
+  const [history, setHistory] = useState([]); // Track history of steps
 
   const handleArrayChange = (e) => {
     const value = e.target.value.split(',').map(Number).sort((a, b) => a - b);
@@ -19,6 +19,7 @@ const BinarySearch = () => {
     setMid(null);
     setFoundIndex(null);
     setStepMessage('');
+    setHistory([]); // Reset history when a new array is entered
   };
 
   const handleTargetChange = (e) => {
@@ -28,12 +29,16 @@ const BinarySearch = () => {
     setMid(null);
     setFoundIndex(null);
     setStepMessage('');
+    setHistory([]); // Reset history when a new target is entered
   };
 
   const handleForward = () => {
     if (low <= high) {
       const middle = Math.floor((low + high) / 2);
       setMid(middle);
+
+      // Save the current state to history
+      setHistory([...history, { low, high, mid }]);
 
       if (array[middle] === target) {
         setFoundIndex(middle);
@@ -51,17 +56,27 @@ const BinarySearch = () => {
   };
 
   const handleBackward = () => {
-    if (mid !== null) {
-      if (array[mid] === target) {
-        setStepMessage('Cannot go backward, element found.');
-      } else if (array[mid] < target) {
-        setLow(mid - 1);
-      } else {
-        setHigh(mid + 1);
-      }
-      setMid(null);
-      setStepMessage('Reversed one step.');
+    if (history.length === 0) {
+      setStepMessage('No previous step available.');
+      return;
     }
+
+    // Restore the previous state from history
+    const lastState = history.pop(); // Remove the last state
+    setLow(lastState.low);
+    setHigh(lastState.high);
+    setMid(lastState.mid);
+
+    // If a match was found, clear the foundIndex to allow further searching
+    if (foundIndex !== null) {
+      setFoundIndex(null);
+      setStepMessage('Reversed from found element. Continuing search.');
+    } else {
+      setStepMessage(`Reversed one step. Current range: low = ${lastState.low}, high = ${lastState.high}`);
+    }
+
+    // Update the history after popping
+    setHistory([...history]);
   };
 
   return (

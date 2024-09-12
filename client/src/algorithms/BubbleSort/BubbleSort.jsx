@@ -6,6 +6,8 @@ const BubbleSortVisualizer = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swapping, setSwapping] = useState(false);
   const [sorted, setSorted] = useState(false);
+  const [pass, setPass] = useState(0); // Track the current pass in Bubble Sort
+  const [history, setHistory] = useState([]); // History of steps
   const [stepMessage, setStepMessage] = useState('');
 
   const handleArrayChange = (e) => {
@@ -14,7 +16,9 @@ const BubbleSortVisualizer = () => {
     setCurrentIndex(0);
     setSwapping(false);
     setSorted(false);
+    setPass(0); // Reset pass
     setStepMessage('');
+    setHistory([]); // Clear history when a new array is entered
   };
 
   const handleForward = () => {
@@ -25,6 +29,7 @@ const BubbleSortVisualizer = () => {
     let swapped = false;
 
     if (newArray[i] > newArray[i + 1]) {
+      // Swap elements
       [newArray[i], newArray[i + 1]] = [newArray[i + 1], newArray[i]];
       swapped = true;
       setSwapping(true);
@@ -32,8 +37,14 @@ const BubbleSortVisualizer = () => {
 
     setArray(newArray);
 
-    if (i + 1 >= newArray.length - 1) {
+    // Save the current step to history for backward operation
+    setHistory([...history, { array: [...array], currentIndex, pass, swapped }]);
+
+    // Check if this is the last comparison of the current pass
+    if (i + 1 >= newArray.length - 1 - pass) {
+      // One full pass completed
       setCurrentIndex(0);
+      setPass(pass + 1);
       if (!swapped) {
         setSorted(true);
         setStepMessage('Array is sorted!');
@@ -41,6 +52,7 @@ const BubbleSortVisualizer = () => {
         setStepMessage('Completed one full pass. Moving to the next pass.');
       }
     } else {
+      // Move to the next comparison
       setCurrentIndex(i + 1);
       setSwapping(swapped);
       setStepMessage(
@@ -52,30 +64,30 @@ const BubbleSortVisualizer = () => {
   };
 
   const handleBackward = () => {
-    if (currentIndex === 0 && swapping) return;
-
-    let newArray = [...array];
-    let i = currentIndex;
-    let unswapped = false;
-
-    if (swapping) {
-      [newArray[i - 1], newArray[i]] = [newArray[i], newArray[i - 1]];
-      unswapped = true;
+    if (history.length === 0) {
+      setStepMessage('No previous step available.');
+      return;
     }
 
-    setArray(newArray);
+    // Get the last state from the history
+    const lastState = history[history.length - 1];
+    setArray(lastState.array);
+    setCurrentIndex(lastState.currentIndex);
+    setPass(lastState.pass);
+    setSwapping(lastState.swapped);
 
-    if (i === 0) {
-      setStepMessage('Reversed one pass. Moving to the previous pass.');
+    // Adjust step message
+    if (lastState.swapped) {
+      setStepMessage(`Reversed swap of elements at index ${lastState.currentIndex} and ${lastState.currentIndex + 1}.`);
     } else {
-      setCurrentIndex(i - 1);
-      setSwapping(unswapped);
-      setStepMessage(
-        unswapped
-          ? `Reversed swap of elements at index ${i - 1} and ${i}.`
-          : `Reversed step at index ${i - 1}.`
-      );
+      setStepMessage(`Reversed step at index ${lastState.currentIndex}.`);
     }
+
+    // Remove the last state from history
+    setHistory(history.slice(0, -1));
+
+    // If the array was marked sorted, unmark it after going backward
+    if (sorted) setSorted(false);
   };
 
   return (
@@ -124,7 +136,7 @@ const BubbleSortVisualizer = () => {
                   index === currentIndex || index === currentIndex + 1
                     ? 'current'
                     : ''
-                } ${sorted ? 'sorted' : ''}`}
+                } ${sorted || index >= array.length - pass ? 'sorted' : ''}`}
               >
                 {num}
               </div>

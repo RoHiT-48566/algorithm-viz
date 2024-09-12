@@ -4,15 +4,17 @@ import './InsertionSort.css';
 const InsertionSortVisualizer = () => {
   const [array, setArray] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(1);
+  const [swapIndex, setSwapIndex] = useState(null); // Store swap index
   const [sortedIndex, setSortedIndex] = useState(0);
   const [stepMessage, setStepMessage] = useState('');
   const [isSorted, setIsSorted] = useState(false);
-  const [history, setHistory] = useState([]); // To store the history of states
+  const [history, setHistory] = useState([]);
 
   const handleArrayChange = (e) => {
     const value = e.target.value.split(',').map(Number);
     setArray(value);
     setCurrentIndex(1);
+    setSwapIndex(null); // Reset swap index
     setSortedIndex(0);
     setStepMessage('');
     setIsSorted(false);
@@ -22,7 +24,6 @@ const InsertionSortVisualizer = () => {
   const handleForward = () => {
     let newArray = [...array];
     let i = currentIndex;
-    let j = i;
 
     if (isSorted) {
       setStepMessage('Array is fully sorted!');
@@ -30,7 +31,7 @@ const InsertionSortVisualizer = () => {
     }
 
     // Save the current state to history before making changes
-    setHistory([...history, { array: [...array], currentIndex, sortedIndex, stepMessage }]);
+    setHistory([...history, { array: [...newArray], currentIndex, sortedIndex, stepMessage }]);
 
     if (i >= newArray.length) {
       setIsSorted(true);
@@ -38,17 +39,21 @@ const InsertionSortVisualizer = () => {
       return;
     }
 
+    let j = i;
+    let message = `Inserting element at index ${i}.`;
+
     // Insert the current element into the sorted portion of the array
     while (j > 0 && newArray[j - 1] > newArray[j]) {
       [newArray[j], newArray[j - 1]] = [newArray[j - 1], newArray[j]];
+      message = `Swapped elements at index ${j} and ${j - 1}.`;
       j--;
     }
 
     setArray(newArray);
+    setSwapIndex(j); // Store where the swap took place
     setCurrentIndex(i + 1);
     setSortedIndex(i);
-
-    setStepMessage(`Inserted element at index ${i} into the correct position.`);
+    setStepMessage(message); // Update step message with swap or insert message
   };
 
   const handleBackward = () => {
@@ -63,6 +68,7 @@ const InsertionSortVisualizer = () => {
     setSortedIndex(lastState.sortedIndex);
     setStepMessage(lastState.stepMessage);
     setHistory(history.slice(0, -1)); // Remove the last state from history
+    setIsSorted(false); // Allow forward steps after backward
   };
 
   return (
@@ -107,8 +113,10 @@ const InsertionSortVisualizer = () => {
               <div
                 key={index}
                 className={`array-element ${
-                  index === currentIndex ? 'current' : ''
-                } ${index <= sortedIndex ? 'sorted' : ''}`}
+                  index === currentIndex - 1 ? 'current' : ''
+                } ${index <= sortedIndex ? 'sorted' : ''} ${
+                  index === swapIndex ? 'swapped' : ''
+                }`}
               >
                 {num}
               </div>
