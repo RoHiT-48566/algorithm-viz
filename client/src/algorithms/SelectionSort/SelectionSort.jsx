@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import './SelectionSort.css'; 
+import React, { useState } from "react";
+import "./SelectionSort.css";
 
 const SelectionSortVisualizer = () => {
   const [array, setArray] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [minIndex, setMinIndex] = useState(0);
   const [sortedIndex, setSortedIndex] = useState(0);
-  const [stepMessage, setStepMessage] = useState('');
+  const [stepMessage, setStepMessage] = useState("");
   const [isSorted, setIsSorted] = useState(false);
   const [history, setHistory] = useState([]);
 
   const handleArrayChange = (e) => {
-    const value = e.target.value.split(',').map(Number);
+    const value = e.target.value.split(",").map(Number);
     setArray(value);
     setCurrentIndex(0);
     setMinIndex(0);
     setSortedIndex(0);
-    setStepMessage('');
+    setStepMessage("");
     setIsSorted(false);
     setHistory([]);
   };
@@ -27,11 +27,14 @@ const SelectionSortVisualizer = () => {
     let minIdx = minIndex;
 
     if (isSorted) {
-      setStepMessage('Array is fully sorted!');
+      setStepMessage("Array is fully sorted!");
       return;
     }
 
-    setHistory([...history, { array: [...array], currentIndex, minIndex, sortedIndex, stepMessage }]);
+    setHistory([
+      ...history,
+      { array: [...array], currentIndex, minIndex, sortedIndex, stepMessage },
+    ]);
 
     if (i >= newArray.length) {
       [newArray[minIdx], newArray[sortedIndex]] = [
@@ -43,15 +46,13 @@ const SelectionSortVisualizer = () => {
 
       if (sortedIndex + 1 >= newArray.length - 1) {
         setIsSorted(true);
-        setStepMessage('Array is fully sorted!');
+        setStepMessage("Array is fully sorted!");
         return;
       }
 
       setCurrentIndex(sortedIndex + 1);
       setMinIndex(sortedIndex + 1);
-      setStepMessage(
-        `Swapped elements at index ${minIdx} and ${sortedIndex}.`
-      );
+      setStepMessage(`Swapped elements at index ${minIdx} and ${sortedIndex}.`);
     } else {
       if (newArray[i] < newArray[minIdx]) {
         minIdx = i;
@@ -59,13 +60,15 @@ const SelectionSortVisualizer = () => {
 
       setCurrentIndex(i + 1);
       setMinIndex(minIdx);
-      setStepMessage(`Checked element at index ${i}. Minimum is at index ${minIdx}.`);
+      setStepMessage(
+        `Checked element at index ${i}. Minimum is at index ${minIdx}.`
+      );
     }
   };
 
   const handleBackward = () => {
     if (history.length === 0) {
-      setStepMessage('No previous step available.');
+      setStepMessage("No previous step available.");
       return;
     }
 
@@ -79,20 +82,11 @@ const SelectionSortVisualizer = () => {
   };
 
   return (
-    <div className="container">
-      <h1 className="text-center my-4 font-weight-bold">Selection Sort</h1>
-
-      <div className="input-group mb-3">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Enter array elements separated by commas (e.g., 5,3,8,6,2)"
-          onChange={handleArrayChange}
-        />
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">
+    <div className="selection-sort-container">
+      <h1 className="title">Selection Sort</h1>
+      <div className="grid-container">
+        {/* Left Side: Code Section */}
+        <div className="code-section">
           <pre>
             <code className="language-javascript">
               {`function selectionSort(arr) {
@@ -115,43 +109,47 @@ const SelectionSortVisualizer = () => {
           </pre>
         </div>
 
-        <div className="col-md-6">
-          <div id="visualization" className="d-flex justify-content-center">
+        {/* Right Side: Grid Layout */}
+        <div className="interaction-section">
+          {/* Input Fields */}
+          <div className="input-fields">
+            <input
+              type="text"
+              className="input-array"
+              placeholder="Enter array elements separated by commas (e.g., 5,3,8,6,2)"
+              onChange={handleArrayChange}
+            />
+          </div>
+
+          {/* Visualization */}
+          <div className="visualization">
             {array.map((num, index) => (
               <div
                 key={index}
                 className={`array-element ${
-                  index === currentIndex ? 'current' : ''
-                } ${
-                  index === minIndex ? 'min-element' : ''
-                } ${index < sortedIndex ? 'sorted' : ''}`}
+                  index === currentIndex ? "current" : ""
+                } ${index === minIndex ? "min-element" : ""} ${
+                  index < sortedIndex ? "sorted" : ""
+                }`}
               >
                 {num}
               </div>
             ))}
           </div>
 
-          <div className="btn-group mt-3 d-flex justify-content-center">
-            <button
-              id="backward"
-              className="btn btn-primary"
-              onClick={handleBackward}
-            >
+          {/* Buttons */}
+          <div className="button-group">
+            <button className="btn backward-btn" onClick={handleBackward}>
               Backward
             </button>
-            <button
-              id="forward"
-              className="btn btn-success"
-              onClick={handleForward}
-            >
+            <button className="btn forward-btn" onClick={handleForward}>
               Forward
             </button>
           </div>
 
-          <div className="card mt-3 text-center">
-            <div className="card-body">
-              <p className="card-text">{stepMessage}</p>
-            </div>
+          {/* Output Message */}
+          <div className="output-message">
+            <p>{stepMessage}</p>
           </div>
         </div>
       </div>

@@ -1,25 +1,29 @@
 import React, { useState } from "react";
-import './BinarySearch.css';
+import "./BinarySearch.css";
 
 const BinarySearch = () => {
   const [array, setArray] = useState([]);
-  const [target, setTarget] = useState('');
+  const [target, setTarget] = useState("");
   const [low, setLow] = useState(0);
-  const [high, setHigh] = useState(array.length - 1);
+  const [high, setHigh] = useState(0);
   const [mid, setMid] = useState(null);
   const [foundIndex, setFoundIndex] = useState(null);
-  const [stepMessage, setStepMessage] = useState('');
-  const [history, setHistory] = useState([]); // Track history of steps
+  const [stepMessage, setStepMessage] = useState("");
+  const [history, setHistory] = useState([]);
 
   const handleArrayChange = (e) => {
-    const value = e.target.value.split(',').map(Number).sort((a, b) => a - b);
+    const value = e.target.value
+      .split(",")
+      .map(Number)
+      .filter((n) => !isNaN(n))
+      .sort((a, b) => a - b);
     setArray(value);
     setLow(0);
     setHigh(value.length - 1);
     setMid(null);
     setFoundIndex(null);
-    setStepMessage('');
-    setHistory([]); // Reset history when a new array is entered
+    setStepMessage("");
+    setHistory([]);
   };
 
   const handleTargetChange = (e) => {
@@ -28,78 +32,68 @@ const BinarySearch = () => {
     setHigh(array.length - 1);
     setMid(null);
     setFoundIndex(null);
-    setStepMessage('');
-    setHistory([]); // Reset history when a new target is entered
+    setStepMessage("");
+    setHistory([]);
   };
 
   const handleForward = () => {
+    if (array.length === 0) {
+      setStepMessage("Array is empty.");
+      return;
+    }
+
     if (low <= high) {
       const middle = Math.floor((low + high) / 2);
       setMid(middle);
 
-      // Save the current state to history
-      setHistory([...history, { low, high, mid }]);
+      setHistory([...history, { low, high, mid: middle }]);
 
       if (array[middle] === target) {
         setFoundIndex(middle);
         setStepMessage(`Element found at index ${middle}`);
       } else if (array[middle] < target) {
-        setLow(middle + 1);
+        const newLow = middle + 1;
+        setLow(newLow);
         setStepMessage(`Element not at index ${middle}. Searching right half.`);
       } else {
-        setHigh(middle - 1);
+        const newHigh = middle - 1;
+        setHigh(newHigh);
         setStepMessage(`Element not at index ${middle}. Searching left half.`);
       }
     } else {
-      setStepMessage('Element is not present in the array');
+      setStepMessage("Element is not present in the array");
     }
   };
 
   const handleBackward = () => {
     if (history.length === 0) {
-      setStepMessage('No previous step available.');
+      setStepMessage("No previous step available.");
       return;
     }
 
-    // Restore the previous state from history
-    const lastState = history.pop(); // Remove the last state
+    const lastState = history.pop();
     setLow(lastState.low);
     setHigh(lastState.high);
     setMid(lastState.mid);
 
-    // If a match was found, clear the foundIndex to allow further searching
     if (foundIndex !== null) {
       setFoundIndex(null);
-      setStepMessage('Reversed from found element. Continuing search.');
+      setStepMessage("Reversed from found element. Continuing search.");
     } else {
-      setStepMessage(`Reversed one step. Current range: low = ${lastState.low}, high = ${lastState.high}`);
+      setStepMessage(
+        `Reversed one step. Current range: low = ${lastState.low}, high = ${lastState.high}`
+      );
     }
 
-    // Update the history after popping
     setHistory([...history]);
   };
 
   return (
-    <div className="container">
-      <h1 className="text-center my-4 font-weight-bold">Binary Search</h1>
-
-      <div className="input-group mb-3">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Enter array elements separated by commas (e.g., 1,2,3,4,5)"
-          onChange={handleArrayChange}
-        />
-        <input
-          type="number"
-          className="form-control"
-          placeholder="Enter target element"
-          onChange={handleTargetChange}
-        />
-      </div>
-
-      <div className="row">
-        <div className="col-md-6">
+    <div className="binary-search-container">
+      <h1 className="title">Binary Search</h1>
+      <div className="grid-container">
+        {/* Left Side: Code Section */}
+        <div className="code-section">
           <pre>
             <code className="language-javascript">
               {`function binarySearch(arr, target) {
@@ -116,41 +110,59 @@ const BinarySearch = () => {
           </pre>
         </div>
 
-        <div className="col-md-6">
-          <div id="visualization" className="d-flex justify-content-center">
+        {/* Right Side: Grid Layout */}
+        <div className="interaction-section">
+          {/* Input Fields */}
+          <div className="input-fields">
+            <input
+              type="text"
+              className="input-array"
+              placeholder="Enter array elements (e.g., 1,2,3,4,5)"
+              onChange={handleArrayChange}
+            />
+            <input
+              type="number"
+              className="input-target"
+              placeholder="Enter target element"
+              onChange={handleTargetChange}
+            />
+          </div>
+
+          {/* Visualization */}
+          <div className="visualization">
             {array.map((num, index) => (
               <div
                 key={index}
-                className={`array-element ${
-                  index === mid ? 'current' : ''
-                } ${index === foundIndex ? 'found' : ''}`}
+                className={`array-element ${index === mid ? "current" : ""} ${
+                  index === foundIndex ? "found" : ""
+                }`}
               >
                 {num}
               </div>
             ))}
           </div>
 
-          <div className="btn-group mt-3 d-flex justify-content-center">
+          {/* Buttons */}
+          <div className="button-group">
             <button
-              id="backward"
-              className="btn btn-primary"
+              className="btn backward-btn"
               onClick={handleBackward}
+              disabled={history.length === 0}
             >
               Backward
             </button>
             <button
-              id="forward"
-              className="btn btn-success"
+              className="btn forward-btn"
               onClick={handleForward}
+              disabled={array.length === 0 || foundIndex !== null}
             >
               Forward
             </button>
           </div>
 
-          <div className="card mt-3 text-center">
-            <div className="card-body">
-              <p className="card-text">{stepMessage}</p>
-            </div>
+          {/* Output Message */}
+          <div className="output-message">
+            <p>{stepMessage}</p>
           </div>
         </div>
       </div>
