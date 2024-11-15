@@ -10,6 +10,8 @@ const algoMapping = {
   "Bubble Sort": lazy(() => import("../algorithms/BubbleSort/BubbleSort.jsx")),
   "Selection Sort": lazy(() => import("../algorithms/SelectionSort/SelectionSort.jsx")),
   "Insertion Sort": lazy(() => import("../algorithms/InsertionSort/InsertionSort.jsx")),
+  "Merge Sort": lazy(() => import("../algorithms/MergeSort/MergeSort.jsx")),
+
 
 };
 
