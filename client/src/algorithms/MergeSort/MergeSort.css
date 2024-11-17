@@ -1,102 +1,130 @@
 .container {
-    font-family: "Arial", sans-serif;
-    padding: 20px;
-  }
-  
-  h1 {
-    font-size: 2.5rem;
-    color: #4caf50;
-  }
-  
-  .input-group input {
-    border: 2px solid #4caf50;
-    border-radius: 5px;
-    padding: 10px;
-    font-size: 1rem;
-    margin-right: 10px;
-  }
-  
-  .input-group input:focus {
-    outline: none;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-  }
-  
-  #visualization {
-    background-color: #f0f8ff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .step {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .division span,
-  .merge span {
-    display: block;
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 10px;
-    color: white;
-    background-color: #4caf50;
-    border-radius: 5px;
-  }
-  
-  .division .left {
-    background-color: #ff9800;
-  }
-  
-  .division .right {
-    background-color: #3f51b5;
-  }
-  
-  .merge .result {
-    background-color: #4caf50;
-  }
-  
-  .btn-group button {
-    width: 120px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 0 5px;
-    transition: transform 0.2s;
-  }
-  
-  .btn-group button#backward {
-    background-color: #ff5722;
-  }
-  
-  .btn-group button#backward:hover {
-    transform: scale(1.1);
-    background-color: #e64a19;
-  }
-  
-  .btn-group button#forward {
-    background-color: #4caf50;
-  }
-  
-  .btn-group button#forward:hover {
-    transform: scale(1.1);
-    background-color: #388e3c;
-  }
-  
-  .card {
-    border: 2px solid #4caf50;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .card-text {
-    font-size: 1.2rem;
-    color: #333;
-    font-weight: bold;
-  }
-  
+  font-family: "Arial", sans-serif;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #4caf50;
+}
+
+.input-group input {
+  border: 2px solid #4caf50;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 1rem;
+  margin-right: 10px;
+}
+
+.input-group input:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.col-md-6 {
+  flex: 1 1 45%; /* Adjust the size of each column */
+  max-width: 45%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+pre {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+#visualization {
+  background-color: #f0f8ff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.division span,
+.merge span {
+  display: block;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px;
+  color: white;
+  background-color: #4caf50;
+  border-radius: 5px;
+}
+
+.division .left {
+  background-color: #ff9800;
+}
+
+.division .right {
+  background-color: #3f51b5;
+}
+
+.merge .result {
+  background-color: #4caf50;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-group button {
+  width: 120px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 0 5px;
+  transition: transform 0.2s;
+}
+
+.btn-group button#backward {
+  background-color: #ff5722;
+}
+
+.btn-group button#backward:hover {
+  transform: scale(1.1);
+  background-color: #e64a19;
+}
+
+.btn-group button#forward {
+  background-color: #4caf50;
+}
+
+.btn-group button#forward:hover {
+  transform: scale(1.1);
+  background-color: #388e3c;
+}
+
+.card {
+  border: 2px solid #4caf50;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.card-text {
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: bold;
+}
