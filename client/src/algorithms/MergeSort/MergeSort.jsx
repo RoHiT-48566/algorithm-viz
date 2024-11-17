@@ -91,7 +91,7 @@ const MergeSortVisualizer = () => {
         />
       </div>
 
-      <div className="row">
+      <div className="row d-flex align-items-start">
         {/* Code Section */}
         <div className="col-md-6">
           <pre>
