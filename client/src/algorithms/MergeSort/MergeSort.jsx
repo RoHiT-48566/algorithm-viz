@@ -1,169 +1,176 @@
 import React, { useState } from "react";
 import "./MergeSort.css";
 
-const MergeSortVisualizer = () => {
+const MergeSort = () => {
   const [array, setArray] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [stepMessage, setStepMessage] = useState("");
   const [steps, setSteps] = useState([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [stepMessage, setStepMessage] = useState('');
+  const [isSorted, setIsSorted] = useState(false);
 
   const handleArrayChange = (e) => {
-    const value = e.target.value.split(",").map(Number);
+    const value = e.target.value
+      .split(",")
+      .map(Number)
+      .filter((n) => !isNaN(n));
     setArray(value);
-    setSteps([]);
-    setCurrentStep(0);
-    setStepMessage('');
-    generateMergeSortSteps(value);
+    setCurrentIndex(0);
+    setStepMessage("");
+    setIsSorted(false);
+    const mergeSortSteps = generateMergeSortSteps([...value]);
+    setSteps(mergeSortSteps);
   };
 
   const generateMergeSortSteps = (arr) => {
-    const mergeSteps = [];
-    const helper = (array) => {
-      if (array.length <= 1) return array;
-      const mid = Math.floor(array.length / 2);
-      const left = helper(array.slice(0, mid));
-      const right = helper(array.slice(mid));
-      mergeSteps.push({ type: "divide", left, right });
-      const merged = merge(left, right, mergeSteps);
-      return merged;
+    const resultSteps = [];
+    const mergeSort = (arr, left, right) => {
+      if (left < right) {
+        const mid = Math.floor((left + right) / 2);
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        merge(arr, left, mid, right, resultSteps);
+      }
     };
 
-    const merge = (left, right, mergeSteps) => {
-      let result = [];
-      let i = 0, j = 0;
-      while (i < left.length && j < right.length) {
-        if (left[i] < right[j]) {
-          result.push(left[i]);
+    const merge = (arr, left, mid, right, steps) => {
+      let leftArr = arr.slice(left, mid + 1);
+      let rightArr = arr.slice(mid + 1, right + 1);
+      let i = 0,
+        j = 0,
+        k = left;
+
+      steps.push({
+        array: [...arr],
+        message: `Dividing array into [${leftArr}] and [${rightArr}]`,
+      });
+
+      while (i < leftArr.length && j < rightArr.length) {
+        if (leftArr[i] <= rightArr[j]) {
+          arr[k] = leftArr[i];
+          steps.push({
+            array: [...arr],
+            message: `Merging: ${leftArr[i]} is smaller, placing it first.`,
+          });
           i++;
         } else {
-          result.push(right[j]);
+          arr[k] = rightArr[j];
+          steps.push({
+            array: [...arr],
+            message: `Merging: ${rightArr[j]} is smaller, placing it first.`,
+          });
           j++;
         }
+        k++;
       }
-      result = [...result, ...left.slice(i), ...right.slice(j)];
-      mergeSteps.push({ type: "merge", result });
-      return result;
+
+      while (i < leftArr.length) {
+        arr[k] = leftArr[i];
+        steps.push({
+          array: [...arr],
+          message: `Adding remaining element: ${leftArr[i]}`,
+        });
+        i++;
+        k++;
+      }
+
+      while (j < rightArr.length) {
+        arr[k] = rightArr[j];
+        steps.push({
+          array: [...arr],
+          message: `Adding remaining element: ${rightArr[j]}`,
+        });
+        j++;
+        k++;
+      }
     };
 
-    helper(arr);
-    setSteps(mergeSteps);
+    mergeSort(arr, 0, arr.length - 1);
+    resultSteps.push({
+      array: [...arr],
+      message: "Sorting completed!",
+      isSorted: true,
+    });
+    return resultSteps;
   };
 
   const handleForward = () => {
-    if (currentStep < steps.length) {
-      setCurrentStep(currentStep + 1);
-      const step = steps[currentStep];
-      if (step.type === "divide") {
-        setStepMessage(`Dividing: Left: [${step.left}] Right: [${step.right}]`);
-      } else if (step.type === "merge") {
-        setStepMessage(`Merging: Result: [${step.result}]`);
+    if (currentIndex < steps.length) {
+      const currentStep = steps[currentIndex];
+      setArray(currentStep.array);
+      setStepMessage(currentStep.message);
+      setCurrentIndex(currentIndex + 1);
+      if (currentStep.isSorted) {
+        setIsSorted(true);
       }
-    } else {
-      setStepMessage("Sorting Complete!");
     }
   };
 
   const handleBackward = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-      const step = steps[currentStep - 1];
-      if (step.type === "divide") {
-        setStepMessage(`Reversed to Division: Left: [${step.left}] Right: [${step.right}]`);
-      } else if (step.type === "merge") {
-        setStepMessage(`Reversed to Merge: Result: [${step.result}]`);
-      }
-    } else {
-      setStepMessage("No previous steps to show.");
+    if (currentIndex > 0) {
+      const prevStep = steps[currentIndex - 1];
+      setArray(prevStep.array);
+      setStepMessage(prevStep.message);
+      setCurrentIndex(currentIndex - 1);
+      setIsSorted(false);
     }
   };
 
   return (
-    <div className="container">
-      <h1 className="text-center my-4 font-weight-bold">Merge Sort</h1>
-
-      {/* Input Section */}
-      <div className="input-group mb-3">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Enter array elements separated by commas (e.g., 5,3,8,6,2)"
-          onChange={handleArrayChange}
-        />
-      </div>
-
-      <div className="row">
-        {/* Code Section */}
-        <div className="col-md-6">
+    <div className="merge-sort-container">
+      <h1 className="title">Merge Sort</h1>
+      <div className="grid-container">
+        <div className="code-section">
           <pre>
             <code className="language-javascript">
-              {`function mergeSort(arr) {
-  if (arr.length <= 1) return arr;
-  const mid = Math.floor(arr.length / 2);
-  const left = mergeSort(arr.slice(0, mid));
-  const right = mergeSort(arr.slice(mid));
-  return merge(left, right);
-}
-
-function merge(left, right) {
-  let result = [];
-  let i = 0, j = 0;
-  while (i < left.length && j < right.length) {
-    if (left[i] < right[j]) {
-      result.push(left[i]);
-      i++;
-    } else {
-      result.push(right[j]);
-      j++;
-    }
+              {`function mergeSort(arr, left, right) {
+  if (left < right) {
+    let mid = Math.floor((left + right) / 2);
+    console.log('Dividing:', arr.slice(left, mid + 1), 'and', arr.slice(mid + 1, right + 1));
+    mergeSort(arr, left, mid);
+    mergeSort(arr, mid + 1, right);
+    merge(arr, left, mid, right);
   }
-  return [...result, ...left.slice(i), ...right.slice(j)];
 }`}
             </code>
           </pre>
         </div>
-
-        {/* Visualization Section */}
-        <div className="col-md-6">
-          <div id="visualization" className="d-flex flex-column align-items-center">
-            {steps.slice(0, currentStep + 1).map((step, index) => (
-              <div key={index} className="step">
-                {step.type === "divide" ? (
-                  <div className="division">
-                    <span className="left">Left: [{step.left.join(", ")}]</span>
-                    <span className="right">Right: [{step.right.join(", ")}]</span>
-                  </div>
-                ) : (
-                  <div className="merge">
-                    <span className="result">Merged: [{step.result.join(", ")}]</span>
-                  </div>
-                )}
+        <div className="interaction-section">
+          <div className="input-fields">
+            <input
+              type="text"
+              className="input-array"
+              placeholder="Enter array elements (comma separated)"
+              onChange={handleArrayChange}
+            />
+          </div>
+          <div className="visualization">
+            {array.map((num, index) => (
+              <div
+                key={index}
+                className={`array-element ${isSorted ? "sorted" : ""}`}
+              >
+                {num}
               </div>
             ))}
           </div>
-
-          {/* Button Group */}
-          <div className="btn-group mt-3 d-flex justify-content-center">
+          <div className="button-group">
             <button
-              id="backward"
-              className="btn btn-primary"
+              className="btn backward-btn"
               onClick={handleBackward}
+              disabled={currentIndex === 0}
             >
               Backward
             </button>
             <button
-              id="forward"
-              className="btn btn-success"
+              className="btn forward-btn"
               onClick={handleForward}
+              disabled={isSorted}
             >
               Forward
             </button>
           </div>
-
-          {/* Step Message Card */}
-          <div className="card mt-3 text-center">
-            <div className="card-body">
-              <p className="card-text">{stepMessage}</p>
-            </div>
+          <div className="output-message">
+            <p>{stepMessage}</p>
           </div>
         </div>
       </div>
@@ -171,4 +178,4 @@ function merge(left, right) {
   );
 };
 
-export default MergeSortVisualizer;
+export default MergeSort;
